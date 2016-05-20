@@ -1,0 +1,12 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}Tarea 02
+${licensePrefix}Sistema Académico con conexión a Base de Datos
+${licensePrefix}
+${licensePrefix}Estudiante: Daniel Somarribas Quirós
+${licensePrefix}Carnet: b57072
+${licensePrefix}Mayo, 2016
+<#if licenseLast??>
+${licenseLast}
+</#if>
