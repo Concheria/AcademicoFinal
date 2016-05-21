@@ -49,34 +49,7 @@ public class MTDS_Matriculas {
             }
         }
     }
-    
-    public boolean verificarElementos()
-    {
-        boolean hayElementos = false;
-        
-        if(tipo.equals("XML"))
-        {
-            
-        }
-        
-        if(tipo.equals("Texto"))
-        {
-            if(archivos.cargarArchivo())
-            {
-                copiarArrayTexto();
-                for(int i=0;i<array.size();i++)
-                {
-                    if(!array.get(0).getCodigo().equals(""))
-                    {
-                        hayElementos = true;
-                    }
-                }
-            }
-        }
-        
-        return hayElementos;
-    }
-    
+
     public void escribirArrayArchivo()
     {
         if(tipo.equals("XML"))
@@ -95,51 +68,99 @@ public class MTDS_Matriculas {
     
     public boolean agregar(String iD, String codigo)
     {
-        try
+        boolean agregado = false;
+        
+        if(tipo.equals("XML"))
+        {
+            String[] info = new String[2];
+            
+            info[0] = iD;
+            info[1] = codigo;
+            
+            try
+            {                
+                xml.guardarEnXML(info);
+                
+                agregado = true;
+            }
+            catch(Exception e)
+            {
+                agregado = false;
+            }
+        }
+        
+        if(tipo.equals("Texto"))
         {
             Matricula temporal=new Matricula(iD, codigo);
+                
+            try
+            {               
+                array.add(temporal);
+                
+                escribirArrayArchivo();
+                
+                copiarArrayTexto();
+                
+                agregado = true;
+            }
+            
+            catch(Exception e)
+            {
+                agregado = false;
+            }
+        }
         
-            array.add(temporal);
-            
-            escribirArrayArchivo();
-            
-            copiarArrayTexto();
-            
-            return true;
-        }
-        catch(Exception e)
-        {
-            return false;
-        }
+        return agregado;
     }
     
     public boolean eliminar(String iD, String codigo)
      {
-         int indice = 0;
+         boolean eliminado = false;
          
-         for(int contador = 0; contador<array.size();contador++)
+         if(tipo.equals("XML"))
          {
-             if(array.get(contador).getID().equals(iD) && array.get(contador).getCodigo().equals(codigo))
+             try
              {
-                 indice = contador;
-                 contador = array.size();
+                 xml.eliminar(iD, codigo);
+                 
+                 eliminado = true;
+             }
+             catch(Exception e)
+             {
+                 eliminado = false;
              }
          }
          
-         try
+         if(tipo.equals("Texto"))
          {
-             array.remove(indice);
-                          
-             escribirArrayArchivo();
-            
-             copiarArrayTexto();
+             int indice = 0;
              
-             return true;
+             for(int contador = 0; contador<array.size();contador++)
+             {
+                 if(array.get(contador).getID().equals(iD) && array.get(contador).getCodigo().equals(codigo))
+                 {
+                     indice = contador;
+                     contador = array.size();
+                 }
+             }
+             
+             try
+             {
+                 array.remove(indice);
+                 
+                 escribirArrayArchivo();
+                 
+                 copiarArrayTexto();
+                 
+                 eliminado = true;
+             }
+             catch(Exception e)
+             {
+                 eliminado = false;
+             }
          }
-         catch(Exception e)
-         {
-             return false;
-         }
+         
+         return eliminado;
      }
     
     public boolean buscar(String iD, String codigo)
@@ -147,30 +168,57 @@ public class MTDS_Matriculas {
         boolean existe = false;
         
         System.out.println("Buscando ID: "+iD+" - Código: "+codigo);
-  
-        System.out.println("Tamaño del Array?: "+array.size());
-        for(int i = 0; i<array.size(); i++)
-         {
-             System.out.println("Comparando con ID: "+array.get(i).getCodigo()+" - Codigo: "+array.get(i).getCodigo());
-             
-             if(array.get(i).getID().equals(iD) && array.get(i).getCodigo().equals(codigo))
-             {
-                 existe = true;
-             }
-         }
+        
+        if(tipo.equals("XML"))
+        {
+            System.out.println("Buscar en XML");
+
+            existe = xml.getExiste(iD, codigo);
+            
+            System.out.println("Existe (Desde métodos)?: "+existe);
+        }
+        
+        if(tipo.equals("Texto"))
+        {
+            System.out.println("Tamaño del Array?: "+array.size());
+            for(int i = 0; i<array.size(); i++)
+            {
+                System.out.println("Comparando con ID: "+array.get(i).getCodigo()+" - Codigo: "+array.get(i).getCodigo());
+                
+                if(array.get(i).getID().equals(iD) && array.get(i).getCodigo().equals(codigo))
+                {
+                    existe = true;
+                }
+            }
+        }
+        
+        if(existe)
+        {
+            System.out.println("Matrícula encontrada en Métodos!");
+        }
         
         return existe;
     }
     
     public String[][] getTodos()
     {
-        int tamano = getArraySize();
+        String[][] info = null;
         
-        String[][] info = new String[tamano][];
-        
-        for(int i=0;i<array.size();i++)
+        if(tipo.equals("XML"))
         {
-            info[i] = array.get(i).getInfo();
+            info = xml.getTodos();
+        }
+        
+        if(tipo.equals("Texto"))
+        {
+            int tamano = getArraySize();
+            
+            info = new String[tamano][];
+            
+            for(int i=0;i<array.size();i++)
+            {
+                info[i] = array.get(i).getInfo();
+            }
         }
         
         return info;
@@ -178,7 +226,20 @@ public class MTDS_Matriculas {
     
     public int getArraySize()
     {
-        return array.size();
+        int cantidad = 0;
+        
+        if(tipo.equals("XML"))
+        {
+            System.out.println("Devolviendo desde XML");
+            cantidad = xml.getCantidadElementos();
+        }
+        
+        if(tipo.equals("Texto"))
+        {
+            cantidad = array.size();
+        }
+        
+        return cantidad;
     }
     
     public void setTipo(String tipo)

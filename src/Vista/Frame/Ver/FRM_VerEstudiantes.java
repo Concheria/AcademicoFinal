@@ -66,56 +66,40 @@ public class FRM_VerEstudiantes extends javax.swing.JFrame {
      */
     public void updateTabla()
     {
+        int numeroFilas = 0;
+        String[][] info = null;
+        
         if(tipo.equals("Base"))
         {
-            int numeroFilas = baseDatos.numeroFilasEstudiantes();
-            String[][] info = baseDatos.InfoTotalEstudiantes(numeroFilas);
-            
-            for(int i=0;i<numeroFilas;i++)
-            {
-                String infoFila[] = new String[3];
-                
-                System.out.println("Agregando Fila: "+i);
-                
-                infoFila[0] = info[i][0];
-                infoFila[1] = info[i][1];
-                infoFila[2] = info[i][2];
-                
-                model.addRow(infoFila);
-                
-                System.out.println("Fila Añadida:\n"+
-                        "Código: "+infoFila[0]+" "+
-                        "Nombre: "+infoFila[1]+" "+
-                        "Dirección: "+infoFila[2]+" ");
-                
-                infoFila = new String[3];
-            }
+            numeroFilas = baseDatos.numeroFilasEstudiantes();
+            info = baseDatos.InfoTotalEstudiantes(numeroFilas);
         }
         
         if(tipo.equals("Texto") || tipo.equals("XML"))
         {
-            int numeroFilas = metodos.getTamano();
-            String[][] info = metodos.getTodos();
+            numeroFilas = metodos.getTamano();
+            System.out.println("Número de Filas en Texto o XML?: "+numeroFilas);
+            info = metodos.getTodos();
+        }
+        
+        for(int i=0;i<numeroFilas;i++)
+        {
+            String infoFila[] = new String[3];
             
-            for(int i=0;i<numeroFilas;i++)
-            {
-                String infoFila[] = new String[3];
-                
-                System.out.println("Agregando Fila: "+i);
-                
-                infoFila[0] = info[i][0];
-                infoFila[1] = info[i][1];
-                infoFila[2] = info[i][2];
-                
-                model.addRow(infoFila);
-                
-                System.out.println("Fila Añadida:\n"+
-                        "Código: "+infoFila[0]+" "+
-                        "Nombre: "+infoFila[1]+" "+
-                        "Dirección: "+infoFila[2]+" ");
-                
-                infoFila = new String[3];
-            }
+            System.out.println("Agregando Fila: "+i);
+            
+            infoFila[0] = info[i][0];
+            infoFila[1] = info[i][1];
+            infoFila[2] = info[i][2];
+            
+            model.addRow(infoFila);
+            
+            System.out.println("Fila Añadida:\n"+
+                    "Cédula: "+infoFila[0]+" "+
+                    "Nombre: "+infoFila[1]+" "+
+                    "Lugar: "+infoFila[2]+" ");
+            
+            infoFila = new String[3];
         }
     }
     

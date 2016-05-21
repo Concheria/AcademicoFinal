@@ -68,8 +68,6 @@ public class XML_Cursos
             System.out.println("XML creado correctamente");
         }
         
-        arregloInformacion=new String[2];
-        arregloTodo = new String[0][0];
         titulos = new ArrayList();
         valores = new ArrayList();
     }
@@ -127,8 +125,8 @@ public class XML_Cursos
     
     public void guardarEnXML(String arregloInformacion[])//Método nuevo en pruebas
     {
-        try{
-            
+        try
+        {
             raiz = document.createElement("Curso");
             principal = document.createElement("Curso");
             document.getDocumentElement().appendChild(raiz);
@@ -153,7 +151,6 @@ public class XML_Cursos
             transformer = TransformerFactory.newInstance().newTransformer();
             transformer.transform(source, result);
             transformer.transform(source, console);
-            
             }
         catch (Exception e) 
         {
@@ -183,19 +180,20 @@ public class XML_Cursos
         }   
     }
     
-    public boolean consultarInformacionDelXml(String codigo)
-    { 
-         Element raiz = document.getDocumentElement();
-         NodeList listaDeItems = raiz.getElementsByTagName("Curso");
-         Node tag=null,datoContenido=null;
-
-         boolean itemEncontrado=false,tituloCodigo=false;
-         int contador=0;
-         int nombre = -1;
-         int creditos = -1;
-
-         for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++) 
-         {   
+    public String[] getInfo(String codigo)
+    {         
+        String[] arregloInformacion=new String[2];
+        Element raiz = document.getDocumentElement();
+        NodeList listaDeItems = raiz.getElementsByTagName("Curso");
+        Node tag=null,datoContenido=null;
+        
+        boolean itemEncontrado=false,tituloCodigo=false;
+        int contador=0;
+        int nombre = -1;
+        int creditos = -1;
+        
+        for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++)
+        {   
              Node item = listaDeItems.item(contadorItems);
              NodeList datosItem = item.getChildNodes();
              for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++) 
@@ -212,24 +210,27 @@ public class XML_Cursos
                  }
                  if(contadorTags==nombre && tag.getNodeName().equals("Nombre"))
                  {
+                    System.out.println("Nombre: "+datoContenido.getNodeValue());
                     arregloInformacion[contador]=datoContenido.getNodeValue();
                     contador++;
                  }
                  if(contadorTags==creditos && tag.getNodeName().equals("Créditos"))
                  {
+                     System.out.println("Créditos: "+datoContenido.getNodeValue());
                     arregloInformacion[contador]=datoContenido.getNodeValue();
-                    contador++;
+                    contadorTags = datosItem.getLength();
+                    contadorItems = listaDeItems.getLength();
                  }
              }
 
          }
-         return itemEncontrado;
+         return arregloInformacion;
     }
     
-    public boolean consultarTodoInformacionDelXml()
+    public String[][] getTodo()
     { 
          Element raiz = document.getDocumentElement();
-         NodeList listaDeItems = raiz.getElementsByTagName("Usuario");
+         NodeList listaDeItems = raiz.getElementsByTagName("Curso");
          Node tag=null,datoContenido=null;
 
          arregloTodo = new String[listaDeItems.getLength()][3];
@@ -241,6 +242,7 @@ public class XML_Cursos
          
          for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++) 
          {   
+             System.out.println("Analizando Item: "+contadorItems);
              Node item = listaDeItems.item(contadorItems);
              NodeList datosItem = item.getChildNodes();
              for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++) 
@@ -260,20 +262,10 @@ public class XML_Cursos
              }
 
          }
-         return itemEncontrado;
+         return arregloTodo;
     }   
-        
-    public String[][] getArregloTodo()
-    {
-        return arregloTodo;
-    }
     
-    public String[] getArregloInformacion()
-    {
-        return this.arregloInformacion;
-    }
-    
-    public void modificarInformacionDelXml(String informacion[])
+    public void modificar(String informacion[])
     { 
          Element raiz = document.getDocumentElement();
          NodeList listaDeItems = raiz.getElementsByTagName("Curso");
@@ -315,39 +307,49 @@ public class XML_Cursos
         }
     }
     
-    public void eliminarInformacionDelXml(String codigo)
+    public void eliminar(String codigo)
     { 
          Element raiz = document.getDocumentElement();
-         NodeList listaDeItems = raiz.getElementsByTagName("Estudiante");
+         NodeList listaDeItems = raiz.getElementsByTagName("Curso");
          Node tag=null,datoContenido=null;
          boolean itemEncontrado=false,tituloCodigo=false;
-
-         try{
-            for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++) 
-            {   
-                Node item = listaDeItems.item(contadorItems);
-                NodeList datosItem = item.getChildNodes();
-                for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++) 
-                {
-                    tag = datosItem.item(contadorTags); 
-                    datoContenido = tag.getFirstChild();
-                    if(tag.getNodeName().equals("Código") && datoContenido.getNodeValue().equals(""+codigo) )
-                    {
-                       itemEncontrado=true;
-                       raiz.removeChild(item);
-                       source = new DOMSource(document);
-                       result = new StreamResult(new java.io.File("XML/"+nombreArchivo+".xml"));
-                       console = new StreamResult(System.out);
-                       transformer = TransformerFactory.newInstance().newTransformer();
-                       transformer.transform(source, result);
-                       transformer.transform(source, console);
-                    } 
-                }
-            }
+         try
+         {
+             for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++)
+             {
+                 Node item = listaDeItems.item(contadorItems);
+                 NodeList datosItem = item.getChildNodes();
+                 for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++)
+                 {
+                     tag = datosItem.item(contadorTags);
+                     datoContenido = tag.getFirstChild();
+                     if(tag.getNodeName().equals("Código") && datoContenido.getNodeValue().equals(""+codigo) )
+                     {
+                         System.out.println("Borrando Elemento");
+                         itemEncontrado=true;
+                         raiz.removeChild(item);
+                         source = new DOMSource(document);
+                         result = new StreamResult(new java.io.File("XML/"+nombreArchivo+".xml"));
+                         console = new StreamResult(System.out);
+                         transformer = TransformerFactory.newInstance().newTransformer();
+                         transformer.transform(source, result);
+                         transformer.transform(source, console);
+                     }
+                 }
+             }
          }
-        catch (Exception e) 
-        {
-            System.err.println("Error al eliminar: " + e);
-        }
+         catch (Exception e)
+         {
+             System.err.println("Error al eliminar: " + e);
+         }
+    }
+    
+    public int getCantidadElementos()
+    {
+         Element raiz = document.getDocumentElement();
+         NodeList listaDeItems = raiz.getElementsByTagName("Curso");
+
+         return listaDeItems.getLength();
+         
     }
 }

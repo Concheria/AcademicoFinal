@@ -35,11 +35,6 @@ public class MTDS_Estudiantes
     
     public void copiarArray()
     {
-        if(tipo.equals("XML"))
-        {
-            
-        }
-        
         if(tipo.equals("Texto"))
         {
             if(archivos.cargarArchivo())
@@ -53,41 +48,9 @@ public class MTDS_Estudiantes
             }
         }
     }
-    
-    public boolean verificarElementos()
-    {
-        boolean hayElementos = false;
-        
-        if(tipo.equals("XML"))
-        {
-            
-        }
-        
-        if(tipo.equals("Texto"))
-        {
-            if(archivos.cargarArchivo())
-            {
-                copiarArray();
-                for(int i=0;i<array.size();i++)
-                {
-                    if(!array.get(0).getID().equals(""))
-                    {
-                        hayElementos = true;
-                    }
-                }
-            }
-        }
-        
-        return hayElementos;
-    }
      
     public void escribirArrayArchivo()
     {
-        if(tipo.equals("XML"))
-        {
-            
-        }
-        
         if(tipo.equals("Texto"))
         {
             archivos.crearArchivo();
@@ -99,22 +62,43 @@ public class MTDS_Estudiantes
     //Añade un nuevo Estudiante al ArrayList
     public boolean agregar(String[] info)
     {
-        Estudiante temporal=new Estudiante(info);
+        boolean agregado = false;
         
-        try
+        if(tipo.equals("XML"))
         {
-            array.add(temporal);
-            
-            escribirArrayArchivo();
-            
-            copiarArray();
-            
-            return true;
+            try
+            {
+                xml.guardarEnXML(info);
+                
+                agregado = true;
+            }
+            catch(Exception e)
+            {
+                agregado = false;
+            }
         }
-        catch(Exception e)
+        
+        if(tipo.equals("Texto"))
         {
-            return false;
+            Estudiante temporal=new Estudiante(info);
+            
+            try
+            {
+                array.add(temporal);
+                
+                escribirArrayArchivo();
+                
+                copiarArray();
+                
+                agregado = true;
+            }
+            catch(Exception e)
+            {
+                agregado = false;
+            }
         }
+        
+        return agregado;
     }
     
     //Usa un Ciclo For para repasar el ArrayList de Estudiantes en busca de una Cédula
@@ -127,96 +111,164 @@ public class MTDS_Estudiantes
         
         System.out.println("String[] Creado.");
         
-        System.out.println("Tamaño del Array?: "+array.size());
-        for(int i = 0; i<array.size(); i++)
-         {
-             System.out.println("Comparando con ID: "+array.get(i).getID());
-             if(array.get(i).getID().equals(iD))
-             {
-                 info[0] = array.get(i).getNombre();
-                 info[1] = array.get(i).getLugar();
-             }
-         }
+        if(tipo.equals("XML"))
+        {
+            System.out.println("Buscar en XML");
+
+            info = xml.getInfo(iD);
+        }
+        
+        if(tipo.equals("Texto"))
+        {
+            System.out.println("Tamaño del Array?: "+array.size());
+            for(int i = 0; i<array.size(); i++)
+            {
+                System.out.println("Comparando con ID: "+array.get(i).getID());
+                if(array.get(i).getID().equals(iD))
+                {
+                    info[0] = array.get(i).getNombre();
+                    info[1] = array.get(i).getLugar();
+                }
+            }
+        }
         
         return info;
     }
     
     public boolean modificar(String iD, String nombre, String lugar)
      {
-         int indice = 0;
-         
-         for(int contador = 0; contador<array.size();contador++)
+         boolean modificado = false;
+
+         if(tipo.equals("XML"))
          {
-             if(array.get(contador).getID().equals(iD))
+             String[] info = new String[3];
+             
+             info[0] = iD;
+             info[1] = nombre;
+             info[2] = lugar;
+             
+             try
              {
-                 indice = contador;
-                 contador = array.size();
+                 xml.modificar(info);
+                 
+                 modificado = true;
+             }
+             catch(Exception e)
+             {
+                 modificado = false;
              }
          }
          
-         try
+         if(tipo.equals("Texto"))
          {
-             array.get(indice).setID(iD);
-             array.get(indice).setNombre(nombre);
-             array.get(indice).setLugar(lugar);
+             int indice = 0;
              
-             escribirArrayArchivo();
-            
-             copiarArray();
+             for(int contador = 0; contador<array.size();contador++)
+             {
+                 if(array.get(contador).getID().equals(iD))
+                 {
+                     indice = contador;
+                     contador = array.size();
+                 }
+             }
              
-             return true;
+             try
+             {
+                 array.get(indice).setID(iD);
+                 array.get(indice).setNombre(nombre);
+                 array.get(indice).setLugar(lugar);
+                 
+                 escribirArrayArchivo();
+                 
+                 copiarArray();
+                 
+                 modificado = true;
+             }
+             catch(Exception e)
+             {
+                 modificado = false;
+             }
          }
-         catch(Exception e)
-         {
-             return false;
-         }
+         
+         return modificado;
      }
     
     public boolean eliminar(String iD)
      {
-         int indice = 0;
+         boolean eliminado = false;
          
-         for(int contador = 0; contador<array.size();contador++)
+         if(tipo.equals("XML"))
          {
-             if(array.get(contador).getID().equals(iD))
+             try
              {
-                 indice = contador;
-                 contador = array.size();
+                 xml.eliminar(iD);
+                 
+                 eliminado = true;
+             }
+             catch(Exception e)
+             {
+                 eliminado = false;
              }
          }
          
-         try
+         if(tipo.equals("Texto"))
          {
-             array.remove(indice);
-                          
-             escribirArrayArchivo();
-            
-             copiarArray();
+             int indice = 0;
              
-             return true;
+             for(int contador = 0; contador<array.size();contador++)
+             {
+                 if(array.get(contador).getID().equals(iD))
+                 {
+                     indice = contador;
+                     contador = array.size();
+                 }
+             }
+             
+             try
+             {
+                 array.remove(indice);
+                 
+                 escribirArrayArchivo();
+                 
+                 copiarArray();
+                 
+                 eliminado = true;
+             }
+             catch(Exception e)
+             {
+                 eliminado = false;
+             }
          }
-         catch(Exception e)
-         {
-             return false;
-         }
+         
+         return eliminado;
      }
     
     //Devuelve un String con todos los estudiantes registrados usando un Ciclo For
     public String[][] getTodos()
     {
-        int elementos = array.size();
+        String[][] lista = null;
         
-        String[][] lista = new String[elementos][3];
-        
-        for(int i=0; i < array.size(); i++)
+        if(tipo.equals("XML"))
         {
-            if(array.get(i).getID() != null && !"".equals(array.get(i).getID()))
+            lista = xml.getTodo();
+        }
+        
+        if(tipo.equals("Texto"))
+        {
+            int elementos = array.size();
+            
+            lista = new String[elementos][3];
+            
+            for(int i=0; i < array.size(); i++)
             {
-                System.out.println("Estudiante - "+i+"\n"
-                        +"ID: "+lista[i][0]
-                        +"Nombre: "+lista[i][1]
-                        +"Lugar: "+lista[i][2]);
-                lista[i] = array.get(i).getInfo();
+                if(array.get(i).getID() != null && !"".equals(array.get(i).getID()))
+                {
+                    System.out.println("Estudiante - "+i+"\n"
+                            +"ID: "+lista[i][0]
+                            +"Nombre: "+lista[i][1]
+                            +"Lugar: "+lista[i][2]);
+                    lista[i] = array.get(i).getInfo();
+                }
             }
         }
         
@@ -225,7 +277,19 @@ public class MTDS_Estudiantes
     
     public int getTamano()
     {
-        return array.size();
+        int cantidad = 0;
+        
+        if(tipo.equals("XML"))
+        {
+            System.out.println("Devolviendo desde XML");
+            cantidad = xml.getCantidadElementos();
+        }
+        if(tipo.equals("Texto"))
+        {
+            cantidad = array.size();
+        }
+        
+        return cantidad;
     }
     
     public void setTipo(String tipo)

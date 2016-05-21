@@ -47,8 +47,8 @@ public class CNTRL_Matriculas implements ActionListener {
         }
         if(e.getActionCommand().equals("Eliminar"))
         {
+            System.out.println("Eliminar (Controlador)");
             eliminar();
-            System.out.println("Eliminar");
         }
         if(e.getActionCommand().equals("Reiniciar"))
         {

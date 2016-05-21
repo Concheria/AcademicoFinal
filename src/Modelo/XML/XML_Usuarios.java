@@ -181,7 +181,6 @@ public class XML_Usuarios {
     
     public String[] getInfo(String user)
     {
-        
         String[] arregloInformacion=new String[2];
         Element raiz = document.getDocumentElement();
         NodeList listaDeItems = raiz.getElementsByTagName("Usuario");
@@ -215,6 +214,8 @@ public class XML_Usuarios {
                 if(contadorTags==password && tag.getNodeName().equals("Pass"))
                 {
                     arregloInformacion[contador]=datoContenido.getNodeValue();
+                    contadorTags = datosItem.getLength();
+                    contadorItems = listaDeItems.getLength();
                     contador++;
                 }
             }
@@ -393,20 +394,20 @@ public class XML_Usuarios {
     
     public void eliminar(String user)
     { 
-         Element raiz = document.getDocumentElement();
-         NodeList listaDeItems = raiz.getElementsByTagName("Usuario");
+        Element raiz = document.getDocumentElement();
+         NodeList listaDeItems = raiz.getElementsByTagName("Curso");
          Node tag=null,datoContenido=null;
-         boolean itemEncontrado=false,tituloUser=false;
-
-         try{
-            for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++) 
-            {   
-                Node item = listaDeItems.item(contadorItems);
-                NodeList datosItem = item.getChildNodes();
-                for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++) 
-                {
-                    tag = datosItem.item(contadorTags); 
-                    datoContenido = tag.getFirstChild();
+         boolean itemEncontrado=false,tituloCodigo=false;
+         try
+         {
+             for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++)
+             {
+                 Node item = listaDeItems.item(contadorItems);
+                 NodeList datosItem = item.getChildNodes();
+                 for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++)
+                 {
+                     tag = datosItem.item(contadorTags);
+                     datoContenido = tag.getFirstChild();
                     if(tag.getNodeName().equals("User") && datoContenido.getNodeValue().equals(""+user) )
                     {
                        itemEncontrado=true;

@@ -67,8 +67,6 @@ public class XML_Matriculas {
             System.out.println("XML creado correctamente");
         }
         
-        arregloInformacion=new String[2];
-        arregloTodo = new String[0][0];
         titulos = new ArrayList();
         valores = new ArrayList();
     }
@@ -178,50 +176,67 @@ public class XML_Matriculas {
         }   
     }
     
-    public boolean consultarInformacionDelXml(String cedula, String codigo)
+    public boolean getExiste(String cedula, String codigo)
+    {              
+        System.out.println("Buscando en Matrículas");
+        Element raiz = document.getDocumentElement();
+        NodeList listaDeItems = raiz.getElementsByTagName("Matrícula");
+        Node tag=null,datoContenido=null,tag2 = null, datoContenido2 = null;
+        
+        boolean existe=false,tituloCedula=false;
+        int contador=0;
+        
+        System.out.println("Cantidad de Items: "+listaDeItems.getLength());
+        
+        for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++)
+        {
+            System.out.println("Analizando item: "+contadorItems);
+            Node item = listaDeItems.item(contadorItems);
+            NodeList datosItem = item.getChildNodes();
+            for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++)
+            {
+                tag = datosItem.item(contadorTags);
+                datoContenido = tag.getFirstChild();
+                System.out.println("Cédula Enviada: "+cedula);
+                System.out.println("Primer Tag: "+tag.getNodeName()+": "+datoContenido.getNodeValue());
+                if((tag.getNodeName().equals("Cédula") && datoContenido.getNodeValue().equals(""+cedula)))
+                {
+                    tag2 = datosItem.item(contadorTags+1);
+                    datoContenido2 = tag2.getFirstChild();
+                    System.out.println("Código Enviado: "+codigo);
+                    System.out.println("Segundo Tag: "+tag2.getNodeName()+": "+datoContenido2.getNodeValue());
+                    if((tag2.getNodeName().equals("Código") && datoContenido2.getNodeValue().equals(""+codigo)))
+                    {
+                        existe=true;
+                        contadorTags = datosItem.getLength();
+                        contadorItems = listaDeItems.getLength();
+                        System.out.println("Matricula encontrada en XML!");
+                    }
+                }
+            }
+            
+        }
+        
+        System.out.println("Exist?: "+existe);
+        return existe;
+    }
+    
+    public String[][] getTodos()
     { 
          Element raiz = document.getDocumentElement();
          NodeList listaDeItems = raiz.getElementsByTagName("Matrícula");
          Node tag=null,datoContenido=null;
 
-         boolean itemEncontrado=false,tituloCedula=false;
-         int contador=0;
-
-         for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++) 
-         {   
-             Node item = listaDeItems.item(contadorItems);
-             NodeList datosItem = item.getChildNodes();
-             for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++) 
-             {           
-                 tag = datosItem.item(contadorTags); 
-                 datoContenido = tag.getFirstChild();
-
-                 if((tag.getNodeName().equals("Cédula") && datoContenido.getNodeValue().equals(""+cedula)) && (tag.getNodeName().equals("Código") && datoContenido.getNodeValue().equals(""+codigo)))
-                 {
-                    itemEncontrado=true;     
-                 }
-                 if(itemEncontrado && contador<3)
-                 {
-                    arregloInformacion[contador]=datoContenido.getNodeValue();
-                    contador++;
-                 }
-             }
-
-         }
-         return itemEncontrado;
-    }
-    
-    public boolean consultarTodoInformacionDelXml()
-    { 
-         Element raiz = document.getDocumentElement();
-         NodeList listaDeItems = raiz.getElementsByTagName("Usuario");
-         Node tag=null,datoContenido=null;
-
+         arregloTodo = new String[listaDeItems.getLength()][2];
+         
          boolean itemEncontrado=false,tituloUser=false;
-         int contador=0;
+         int contador=-1;
 
+         System.out.println("Cantidad de Items: "+listaDeItems.getLength());
+         
          for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++) 
          {   
+             System.out.println("Analizando Item: "+contadorItems);
              Node item = listaDeItems.item(contadorItems);
              NodeList datosItem = item.getChildNodes();
              for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++) 
@@ -231,98 +246,77 @@ public class XML_Matriculas {
                  
                  itemEncontrado = true;
                                   
-                 if(contador < 2)
-                 {
-                     arregloTodo = new String[contadorItems][contadorTags];
-                     arregloTodo[contadorItems][contadorTags] = datoContenido.getNodeValue();
-                 }
+                if(!datoContenido.getNodeValue().equals(""))
+                {
+                    if(contador < 2)
+                    {
+                        arregloTodo[contadorItems][contadorTags] = datoContenido.getNodeValue();
+                    }
+                }
              }
 
          }
-         return itemEncontrado;
+         return arregloTodo;
     }
     
-    public String[] getArregloInformacion()
+    public void eliminar(String cedula, String codigo)
     {
-        return this.arregloInformacion;
-    }
-    
-    public void modificarInformacionDelXml(String informacion[])
-    { 
-         Element raiz = document.getDocumentElement();
-         NodeList listaDeItems = raiz.getElementsByTagName("Matrícula");
-         Node tag=null,datoContenido=null;
-         String arregloInformacion[]=new String[2];
-         boolean itemEncontrado=false,tituloCedula=false;
-         int contador=0;
-         try
-         {
-            for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++) 
-            {   
-                Node item = listaDeItems.item(contadorItems);
-                NodeList datosItem = item.getChildNodes();
-                for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++) 
-                {   
-                    tag = datosItem.item(contadorTags); 
-                    datoContenido = tag.getFirstChild();
-                    if(tag.getNodeName().equals("Cédula") && datoContenido.getNodeValue().equals(""+informacion[0]) )
-                    {   
-                       itemEncontrado=true;     
-                    }
-                    if(itemEncontrado && contador<2)
-                    {
-                        datoContenido.setNodeValue(informacion[contador]);                    
-                        contador++;
-                    }
-                }
-            }
-           source = new DOMSource(document);
-           result = new StreamResult(new java.io.File("XML/"+nombreArchivo+".xml"));
-           console = new StreamResult(System.out);
-           transformer = TransformerFactory.newInstance().newTransformer();
-           transformer.transform(source, result);
-           transformer.transform(source, console);
-        }
-        catch (Exception e) 
+        System.out.println("Eliminando en XMl");
+        Element raiz = document.getDocumentElement();
+        NodeList listaDeItems = raiz.getElementsByTagName("Matrícula");
+        Node tag=null,datoContenido=null, tag2 = null, datoContenido2 = null;
+        boolean itemEncontrado=false,tituloCedula=false;
+        
+        try
         {
-            System.err.println("Error al modificar: " + e);
-        }
-    }
-    
-    public void eliminarInformacionDelXml(String cedula)
-    { 
-         Element raiz = document.getDocumentElement();
-         NodeList listaDeItems = raiz.getElementsByTagName("Matrícula");
-         Node tag=null,datoContenido=null;
-         String arregloInformacion[]=new String[2];
-         boolean itemEncontrado=false,tituloCedula=false;
-
-         try{
-            for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++) 
-            {   
+            for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++)
+            {
+                System.out.println("Analizando item: "+contadorItems);
                 Node item = listaDeItems.item(contadorItems);
                 NodeList datosItem = item.getChildNodes();
-                for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++) 
-                {
-                    tag = datosItem.item(contadorTags); 
-                    datoContenido = tag.getFirstChild();
-                    if(tag.getNodeName().equals("Cédula") && datoContenido.getNodeValue().equals(""+cedula) )
-                    {
-                       itemEncontrado=true;
-                       raiz.removeChild(item);
-                       source = new DOMSource(document);
-                       result = new StreamResult(new java.io.File("XML/"+nombreArchivo+".xml"));
-                       console = new StreamResult(System.out);
-                       transformer = TransformerFactory.newInstance().newTransformer();
-                       transformer.transform(source, result);
-                       transformer.transform(source, console);
-                    } 
+                for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++)
+                {          
+                    tag = datosItem.item(contadorTags);
+                    datoContenido = tag.getFirstChild();          
+                    System.out.println("Cédula Enviada: "+cedula);
+                    System.out.println("Primer Tag: "+tag.getNodeName()+": "+datoContenido.getNodeValue());
+          
+                    if((tag.getNodeName().equals("Cédula") && datoContenido.getNodeValue().equals(""+cedula)))
+                    {                    
+                        tag2 = datosItem.item(contadorTags+1);
+                        datoContenido2 = tag2.getFirstChild();
+                        System.out.println("Código Enviado: "+codigo);
+                        System.out.println("Segundo Tag: "+tag2.getNodeName()+": "+datoContenido2.getNodeValue());
+                        if((tag2.getNodeName().equals("Código") && datoContenido2.getNodeValue().equals(""+codigo)))
+                        {
+                            itemEncontrado=true;
+                            System.out.println("Matricula encontrada - Intentando Eliminar");
+                            raiz.removeChild(item);
+                            source = new DOMSource(document);
+                            result = new StreamResult(new java.io.File("XML/"+nombreArchivo+".xml"));
+                            console = new StreamResult(System.out);
+                            transformer = TransformerFactory.newInstance().newTransformer();
+                            transformer.transform(source, result);
+                            transformer.transform(source, console);
+                            
+                            contadorTags = datosItem.getLength();
+                            contadorItems = listaDeItems.getLength();
+                        }
+                    }
                 }
             }
-         }
-        catch (Exception e) 
+        }
+        catch (Exception e)
         {
             System.err.println("Error al eliminar: " + e);
         }
+    }
+    
+    public int getCantidadElementos()
+    {
+        Element raiz = document.getDocumentElement();
+        NodeList listaDeItems = raiz.getElementsByTagName("Matrícula");
+        
+        return listaDeItems.getLength();
     }
 }

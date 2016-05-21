@@ -67,8 +67,6 @@ public class XML_Estudiantes {
             System.out.println("XML creado correctamente");
         }
         
-        arregloInformacion=new String[3];
-        arregloTodo = new String[0][0];
         titulos = new ArrayList();
         valores = new ArrayList();
     }
@@ -91,7 +89,6 @@ public class XML_Estudiantes {
  
             transformer.transform(source, result);
             transformer.transform(source, console);
- 
         } 
         catch (Exception e) 
         {
@@ -182,86 +179,96 @@ public class XML_Estudiantes {
         }   
     }
     
-    public boolean consultarInformacionDelXml(String cedula)
+    public String[] getInfo(String cedula)
     { 
-         Element raiz = document.getDocumentElement();
-         NodeList listaDeItems = raiz.getElementsByTagName("Estudiante");
-         Node tag=null,datoContenido=null;
-
-         boolean itemEncontrado=false,tituloCedula=false;
-         int contador=0;
-
-         for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++) 
-         {   
-             Node item = listaDeItems.item(contadorItems);
-             NodeList datosItem = item.getChildNodes();
-             for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++) 
-             {           
-                 tag = datosItem.item(contadorTags); 
-                 datoContenido = tag.getFirstChild();
-
-                 if(tag.getNodeName().equals("Cédula") && datoContenido.getNodeValue().equals(""+cedula) )
-                 {
-                    itemEncontrado=true;     
-                 }
-                 if(itemEncontrado && contador<3)
-                 {
+        String[] arregloInformacion=new String[2];
+        Element raiz = document.getDocumentElement();
+        NodeList listaDeItems = raiz.getElementsByTagName("Estudiante");
+        Node tag=null,datoContenido=null;
+        
+        boolean itemEncontrado=false,tituloCedula=false;
+        int contador=0;
+        int nombre = -1;
+        int lugar = -1;
+        
+        for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++)
+        {
+            Node item = listaDeItems.item(contadorItems);
+            NodeList datosItem = item.getChildNodes();
+            for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++)
+            {
+                tag = datosItem.item(contadorTags);
+                datoContenido = tag.getFirstChild();
+                
+                if(tag.getNodeName().equals("Cédula") && datoContenido.getNodeValue().equals(""+cedula) )
+                {
+                    itemEncontrado=true;
+                    System.out.println("Estudiante Enviado: "+cedula+" - Estudiante encontrado: "+datoContenido.getNodeValue());
+                    nombre = contadorTags + 1;
+                    lugar = contadorTags + 2;
+                }
+                if(contadorTags==nombre && tag.getNodeName().equals("Nombre"))
+                {
+                    System.out.println("Nombre: "+datoContenido.getNodeValue());
                     arregloInformacion[contador]=datoContenido.getNodeValue();
                     contador++;
-                 }
-             }
-
-         }
-         return itemEncontrado;
+                }
+                if(contadorTags==lugar && tag.getNodeName().equals("Lugar"))
+                {
+                    System.out.println("Lugar: "+datoContenido.getNodeValue());
+                    arregloInformacion[contador]=datoContenido.getNodeValue();
+                    contadorTags = datosItem.getLength();
+                    contadorItems = listaDeItems.getLength();
+                }
+            }
+            
+        }
+        return arregloInformacion;
     } 
     
-    public boolean consultarTodoInformacionDelXml()
-    { 
-         Element raiz = document.getDocumentElement();
-         NodeList listaDeItems = raiz.getElementsByTagName("Usuario");
-         Node tag=null,datoContenido=null;
-
-         boolean itemEncontrado=false,tituloUser=false;
-         int contador=0;
-
-         for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++) 
-         {   
-             Node item = listaDeItems.item(contadorItems);
-             NodeList datosItem = item.getChildNodes();
-             for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++) 
-             {           
-                 tag = datosItem.item(contadorTags); 
-                 datoContenido = tag.getFirstChild();
-                 
-                 itemEncontrado = true;
-                 
-                 if(contador < 3)
-                 {
-                     arregloTodo = new String[contadorItems][contadorTags];
-                     arregloTodo[contadorItems][contadorTags] = datoContenido.getNodeValue();
-                 }
-             }
-
-         }
-         return itemEncontrado;
-    }   
-        
-    public String[][] getArregloTodo()
+    public String[][] getTodo()
     {
+        Element raiz = document.getDocumentElement();
+        NodeList listaDeItems = raiz.getElementsByTagName("Estudiante");
+        Node tag=null,datoContenido=null;
+        
+        arregloTodo = new String[listaDeItems.getLength()][3];
+        
+        boolean itemEncontrado=false,tituloUser=false;
+        int contador=-1;
+        
+        System.out.println("Cantidad de Items: "+listaDeItems.getLength());
+        
+        for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++)
+        {
+            System.out.println("Analizando Item: "+contadorItems);
+            Node item = listaDeItems.item(contadorItems);
+            NodeList datosItem = item.getChildNodes();
+            for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++)
+            {
+                tag = datosItem.item(contadorTags);
+                datoContenido = tag.getFirstChild();
+                
+                itemEncontrado = true;
+                
+                if(!datoContenido.getNodeValue().equals(""))
+                {
+                    if(contador < 2)
+                    {
+                        arregloTodo[contadorItems][contadorTags] = datoContenido.getNodeValue();
+                    }
+                }
+            }
+        }
         return arregloTodo;
     }
-    
-    public String[] getArregloInformacion()
-    {
-        return this.arregloInformacion;
-    }
-    
-    public void modificarInformacionDelXml(String informacion[])
+
+    public void modificar(String informacion[])
     { 
          Element raiz = document.getDocumentElement();
          NodeList listaDeItems = raiz.getElementsByTagName("Estudiante");
          Node tag=null,datoContenido=null;
-         String arregloInformacion[]=new String[3];
+         String arregloInformacion[]=new String[2];
          boolean itemEncontrado=false,tituloCedula=false;
          int contador=0;
          try
@@ -298,34 +305,35 @@ public class XML_Estudiantes {
         }
     }
     
-    public void eliminarInformacionDelXml(String cedula)
+    public void eliminar(String cedula)
     { 
          Element raiz = document.getDocumentElement();
          NodeList listaDeItems = raiz.getElementsByTagName("Estudiante");
          Node tag=null,datoContenido=null;
-         String arregloInformacion[]=new String[3];
          boolean itemEncontrado=false,tituloCedula=false;
-
-         try{
-            for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++) 
-            {   
-                Node item = listaDeItems.item(contadorItems);
-                NodeList datosItem = item.getChildNodes();
-                for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++) 
-                {
-                    tag = datosItem.item(contadorTags); 
-                    datoContenido = tag.getFirstChild();
-                    if(tag.getNodeName().equals("Cédula") && datoContenido.getNodeValue().equals(""+cedula) )
-                    {
-                       itemEncontrado=true;
-                       raiz.removeChild(item);
-                       source = new DOMSource(document);
-                       result = new StreamResult(new java.io.File("XML/"+nombreArchivo+".xml"));
-                       console = new StreamResult(System.out);
-                       transformer = TransformerFactory.newInstance().newTransformer();
-                       transformer.transform(source, result);
-                       transformer.transform(source, console);
-                    } 
+         
+         try
+         {
+             for(int contadorItems=0; contadorItems<listaDeItems.getLength(); contadorItems++)
+             {
+                 Node item = listaDeItems.item(contadorItems);
+                 NodeList datosItem = item.getChildNodes();
+                 for(int contadorTags=0; contadorTags<datosItem.getLength(); contadorTags++)
+                 {
+                     tag = datosItem.item(contadorTags);
+                     datoContenido = tag.getFirstChild();
+                     if(tag.getNodeName().equals("Cédula") && datoContenido.getNodeValue().equals(""+cedula) )
+                     {
+                         System.out.println("Borrando Elemento");
+                         itemEncontrado=true;
+                         raiz.removeChild(item);
+                         source = new DOMSource(document);
+                         result = new StreamResult(new java.io.File("XML/"+nombreArchivo+".xml"));
+                         console = new StreamResult(System.out);
+                         transformer = TransformerFactory.newInstance().newTransformer();
+                         transformer.transform(source, result);
+                         transformer.transform(source, console);
+                     } 
                 }
             }
          }
@@ -333,5 +341,14 @@ public class XML_Estudiantes {
         {
             System.err.println("Error al eliminar: " + e);
         }
+    }
+    
+    public int getCantidadElementos()
+    {
+         Element raiz = document.getDocumentElement();
+         NodeList listaDeItems = raiz.getElementsByTagName("Estudiante");
+
+         return listaDeItems.getLength();
+         
     }
 }

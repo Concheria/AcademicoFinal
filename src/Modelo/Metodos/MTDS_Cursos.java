@@ -48,43 +48,6 @@ public class MTDS_Cursos
             }
         }
     }
-    
-    public boolean verificarElementos()
-    {
-        boolean hayElementos = false;
-        
-        if(tipo.equals("XML"))
-        {
-            if(xml.cargarXML())
-            {
-                if(xml.consultarTodoInformacionDelXml())
-                {
-                    System.out.println("Hay Elementos");
-                }
-                else
-                {
-                    System.out.println("No Hay Elementos!");
-                }
-            }
-        }
-        
-        if(tipo.equals("Texto"))
-        {
-            if(archivos.cargarArchivo())
-            {
-                copiarArray();
-                for(int i=0;i<array.size();i++)
-                {
-                    if(!array.get(0).getCodigo().equals(""))
-                    {
-                        hayElementos = true;
-                    }
-                }
-            }
-        }
-        
-        return hayElementos;
-    }
      
     public void escribirArrayArchivo()
     {
@@ -154,13 +117,12 @@ public class MTDS_Cursos
         System.out.println("Buscando Codigo: "+codigo);
 
         String[] info = new String[2];
-        
-        System.out.println("String[] Creado.");
 
         if(tipo.equals("XML"))
         {
-            xml.consultarInformacionDelXml(codigo);
-            info = xml.getArregloInformacion();
+            xml.getInfo(codigo);
+            
+            info = xml.getInfo(codigo);
         }
         
         if(tipo.equals("Texto"))
@@ -195,7 +157,7 @@ public class MTDS_Cursos
              
              try
              {
-                 xml.modificarInformacionDelXml(info);
+                 xml.modificar(info);
                  
                  modificado = true;
              }
@@ -246,7 +208,7 @@ public class MTDS_Cursos
          {
              try
              {
-                 xml.eliminarInformacionDelXml(codigo);
+                 xml.eliminar(codigo);
                  
                  eliminado = true;
              }
@@ -295,14 +257,7 @@ public class MTDS_Cursos
 
         if(tipo.equals("XML"))
         {
-            if(xml.consultarTodoInformacionDelXml())
-            {
-                lista = xml.getArregloTodo();
-            }
-            else
-            {
-                System.out.println("Error al devolver todo");
-            }
+            lista = xml.getTodo();
         }
         
         if(tipo.equals("Texto"))
@@ -327,9 +282,21 @@ public class MTDS_Cursos
         return lista;
     }
     
-    public int getTamanoArray()
+    public int getTamano()
     {
-        return array.size();
+        int cantidad = 0;
+        
+        if(tipo.equals("XML"))
+        {
+            System.out.println("Devolviendo desde XML");
+            cantidad = xml.getCantidadElementos();
+        }
+        if(tipo.equals("Texto"))
+        {
+            cantidad = array.size();
+        }
+        
+        return cantidad;
     }
     
     public void setTipo(String tipo)

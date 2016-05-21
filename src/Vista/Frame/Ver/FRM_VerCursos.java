@@ -77,7 +77,8 @@ public class FRM_VerCursos extends javax.swing.JFrame {
         
         if(tipo.equals("Texto") || tipo.equals("XML"))
         {
-            numeroFilas = metodos.getTamanoArray();
+            numeroFilas = metodos.getTamano();
+            System.out.println("Número de Filas en Texto o XML?: "+numeroFilas);
             info = metodos.getTodos();
         }
         
