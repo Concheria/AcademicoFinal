@@ -30,6 +30,7 @@ public class ARCH_Estudiantes
         else
         {
             System.out.println("Error al cargar el archivo 'Estudiantes'.");
+            crearArchivo();
         }
     }
     

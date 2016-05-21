@@ -64,8 +64,8 @@ public class XML_Cursos
         }
         else
         {
+            crearArchivo( nombreArchivo);
             crearXML();
-            System.out.println("XML creado correctamente");
         }
         
         titulos = new ArrayList();
@@ -91,6 +91,7 @@ public class XML_Cursos
             transformer.transform(source, result);
             transformer.transform(source, console);
  
+            System.err.println("Archivo XML creado correctamente");
         } 
         catch (Exception e) 
         {

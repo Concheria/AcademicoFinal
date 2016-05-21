@@ -30,6 +30,7 @@ public class ARCH_Usuarios
         else
         {
             System.out.println("Error al cargar el archivo 'Usuarios'.");
+            crearArchivo();
         }
     }
     

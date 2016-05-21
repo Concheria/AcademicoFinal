@@ -29,6 +29,7 @@ public class ARCH_Matriculas {
         else
         {
             System.out.println("Error al cargar el archivo 'Matriculas'.");
+            crearArchivo();
         }
     }
     

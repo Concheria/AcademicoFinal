@@ -61,8 +61,8 @@ public class XML_Usuarios {
         }
         else
         {
+            crearArchivo( nombreArchivo);
             crearXML();
-            System.out.println("XML creado correctamente");
         }
     
         titulos = new ArrayList();
@@ -88,6 +88,7 @@ public class XML_Usuarios {
             transformer.transform(source, result);
             transformer.transform(source, console);
  
+            System.err.println("Archivo XML creado correctamente");
         } 
         catch (Exception e) 
         {
